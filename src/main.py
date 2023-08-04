@@ -3,7 +3,7 @@ from PyQt5.QtWidgets import *
 from PyQt5.QtCore import *
 from PyQt5.QtGui import *
 
-from PyQt5.Qsci import * 
+from PyQt5.Qsci import *
 # test
 
 import sys
@@ -30,7 +30,7 @@ class MainWindow(QMainWindow):
         self.setWindowTitle(self.app_name)
         self.resize(1300, 900)
 
-        self.setStyleSheet(open("./src/css/style.qss", "r").read())
+        self.setStyleSheet(open(".\src\css\style.qss", "r").read())
 
         # alternative Consolas font
         self.window_font = QFont("Fire Code") # font needs to be installed in your computer if its not use something else
@@ -56,7 +56,7 @@ class MainWindow(QMainWindow):
 
         # File Menu
         file_menu = menu_bar.addMenu("File")
-        
+
         new_file = file_menu.addAction("New")
         new_file.setShortcut("Ctrl+N")
         new_file.triggered.connect(self.new_file)
@@ -70,7 +70,7 @@ class MainWindow(QMainWindow):
         open_folder.triggered.connect(self.open_folder)
 
         file_menu.addSeparator()
-        
+
         save_file = file_menu.addAction("Save")
         save_file.setShortcut("Ctrl+S")
         save_file.triggered.connect(self.save_file)
@@ -78,11 +78,11 @@ class MainWindow(QMainWindow):
         save_as = file_menu.addAction("Save As")
         save_as.setShortcut("Ctrl+Shift+S")
         save_as.triggered.connect(self.save_as)
-        
+
 
         # Edit menu
         edit_menu = menu_bar.addMenu("Edit")
-        
+
         copy_action = edit_menu.addAction("Copy")
         copy_action.setShortcut("Ctrl+C")
         copy_action.triggered.connect(self.copy)
@@ -108,8 +108,8 @@ class MainWindow(QMainWindow):
             return
 
         # add whichever extentions you consider as python file
-        editor = self.get_editor(path, path.suffix in {".py", ".pyw"}) 
-        
+        editor = self.get_editor(path, path.suffix in {".py", ".pyw"})
+
         if is_new_file:
             self.tab_view.addTab(editor, "untitled")
             self.setWindowTitle("untitled - " + self.app_name)
@@ -117,7 +117,7 @@ class MainWindow(QMainWindow):
             self.tab_view.setCurrentIndex(self.tab_view.count() - 1)
             self.current_file = None
             return
-        
+
         # check if file already open
         for i in range(self.tab_view.count()):
             if self.tab_view.tabText(i) == path.name or self.tab_view.tabText(i) == "*"+path.name:
@@ -171,7 +171,7 @@ class MainWindow(QMainWindow):
 
     def set_up_body(self):
 
-        # Body        
+        # Body
         body_frame = QFrame()
         body_frame.setFrameShape(QFrame.NoFrame)
         body_frame.setFrameShadow(QFrame.Plain)
@@ -202,7 +202,7 @@ class MainWindow(QMainWindow):
         self.side_bar.setFrameShadow(QFrame.Plain)
         self.side_bar.setStyleSheet(f'''
             background-color: {self.side_bar_clr};
-        ''')   
+        ''')
         side_bar_layout = QVBoxLayout()
         side_bar_layout.setContentsMargins(5, 10, 5, 0)
         side_bar_layout.setSpacing(0)
@@ -234,7 +234,7 @@ class MainWindow(QMainWindow):
         self.file_manager_layout.setSpacing(0)
 
         self.file_manager = FileManager(
-            tab_view=self.tab_view, 
+            tab_view=self.tab_view,
             set_new_tab=self.set_new_tab,
             main_window=self
         )
@@ -249,7 +249,7 @@ class MainWindow(QMainWindow):
         self.search_frame = self.get_frame()
         self.search_frame.setMaximumWidth(400)
         self.search_frame.setMinimumWidth(200)
-        
+
         search_layout = QVBoxLayout()
         search_layout.setAlignment(Qt.AlignmentFlag.AlignTop)
         search_layout.setContentsMargins(0, 10, 0, 0)
@@ -275,7 +275,7 @@ class MainWindow(QMainWindow):
                 self.search_checkbox.isChecked()
             )
         )
-        
+
 
         ##############################
         ###### SEARCH ListView ##########
@@ -297,12 +297,12 @@ class MainWindow(QMainWindow):
         search_layout.addWidget(self.search_checkbox)
         search_layout.addWidget(search_input)
         search_layout.addSpacerItem(QSpacerItem(5, 5, QSizePolicy.Minimum, QSizePolicy.Minimum))
-        
+
         search_layout.addWidget(self.search_list_view)
         self.search_frame.setLayout(search_layout)
 
 
-      
+
 
         ##############################
         ###### SETUP WIDGETS ##########
@@ -327,7 +327,7 @@ class MainWindow(QMainWindow):
         self.set_new_tab(Path(item.full_path))
         editor: Editor = self.tab_view.currentWidget()
         editor.setCursorPosition(item.lineno, item.end)
-        editor.setFocus()      
+        editor.setFocus()
 
     def show_dialog(self, title, msg) -> int:
         dialog = QMessageBox(self)
@@ -366,7 +366,7 @@ class MainWindow(QMainWindow):
                 frame.show()
             else:
                 frame.hide()
-        
+
         self.current_side_bar = type_
 
 
@@ -379,22 +379,22 @@ class MainWindow(QMainWindow):
     def save_file(self):
         if self.current_file is None and self.tab_view.count() > 0:
             self.save_as()
-        
+
         editor = self.tab_view.currentWidget()
         self.current_file.write_text(editor.text())
         self.statusBar().showMessage(f"Saved {self.current_file.name}", 2000)
         editor.current_file_changed = False
-    
+
     def save_as(self):
-        # save as 
+        # save as
         editor = self.tab_view.currentWidget()
         if editor is None:
             return
-        
+
         file_path = QFileDialog.getSaveFileName(self, "Save As", os.getcwd())[0]
         if file_path == '':
             self.statusBar().showMessage("Cancelled", 2000)
-            return 
+            return
         path = Path(file_path)
         path.write_text(editor.text())
         self.tab_view.setTabText(self.tab_view.currentIndex(), path.name)
@@ -440,18 +440,3 @@ if __name__ == '__main__':
     app = QApplication([])
     window = MainWindow()
     sys.exit(app.exec())
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
